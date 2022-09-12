@@ -84,6 +84,13 @@ export const officialPlugins = [
     kind: 'editor',
   },
   {
+    name: 'MyPlugin',
+    src: '/src/editors/MyEditor.js',
+    icon: 'edit',
+    default: false,
+    kind: 'editor',
+  },
+  {
     name: 'Open project',
     src: '/src/menu/OpenProject.js',
     icon: 'folder_open',
