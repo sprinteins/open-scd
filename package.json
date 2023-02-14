@@ -27,5 +27,8 @@
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-workbox": "^6.2.0"
+  },
+  "dependencies": {
+    "koa-proxies": "^0.12.3"
   }
 }

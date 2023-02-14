@@ -1,4 +1,5 @@
 // import { hmrPlugin, presets } from '@open-wc/dev-server-hmr';
+import proxy from 'koa-proxies';
 
 /** Use Hot Module replacement by adding --hmr to the start command */
 const hmr = process.argv.includes('--hmr');
@@ -23,6 +24,16 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
     /** Use Hot Module Replacement by uncommenting. Requires @open-wc/dev-server-hmr plugin */
     // hmr && hmrPlugin({ exclude: ['**/*/node_modules/**/*'], presets: [presets.litElement] }),
   ],
+  middleware: [
+    proxy('/compas-scl-data-service', {
+      target: 'http://localhost',
+      changeOrigin: true
+    }),
+    proxy('/auth', {
+      target: 'http://localhost',
+      changeOrigin: true
+    })
+  ]
 
   // See documentation for all available options
 });

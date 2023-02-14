@@ -12,5 +12,11 @@
     "icon": "save",
     "active": true,
     "src": "plugins/oscd-save/oscd-save.js"
+  },
+  {
+    "name": "Compas Open",
+    "icon": "folder_open",
+    "active": true,
+    "src": "plugins/compas-open-menu/compas-open-plugin.js"
   }
 ]}
