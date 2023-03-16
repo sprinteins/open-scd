@@ -7,6 +7,13 @@ export const officialPlugins = [
     kind: 'editor',
   },
   {
+    name: 'Communication Explorer',
+    src: 'http://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@7541cebcd12b0ae6dbd340b0f4eddff6dcbceae8/dist/network.js',
+    icon: 'edit',
+    default: true,
+    kind: 'editor',
+  },
+  {
     name: 'IED',
     src: '/src/editors/IED.js',
     icon: 'developer_board',
@@ -234,11 +241,4 @@ export const officialPlugins = [
     requireDoc: true,
     position: 'middle'
   },
-  {
-    name: 'Communication Explorer',
-    src: 'https://raw.githubusercontent.com/sprinteins/oscd-plugins/build/network/dist/network.js',
-    icon: 'edit',
-    default: false,
-    kind: 'editor',
-  }
 ];
