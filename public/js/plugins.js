@@ -233,5 +233,12 @@ export const officialPlugins = [
     kind: 'menu',
     requireDoc: true,
     position: 'middle'
+  },
+  {
+    name: 'Communication Explorer',
+    src: 'https://raw.githubusercontent.com/sprinteins/oscd-plugins/build/network/dist/network.js',
+    icon: 'edit',
+    default: false,
+    kind: 'editor',
   }
 ];
