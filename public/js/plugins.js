@@ -8,7 +8,21 @@ export const officialPlugins = [
   },
   {
     name: 'Communication Explorer',
-    src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@build%2Fnetwork/dist/network.js',
+    src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@f549967e5c837a013c8bbaf99eb9a67bcee75891/dist/communication-explorer.js',
+    icon: 'edit',
+    default: true,
+    kind: 'editor',
+  },
+  {
+    name: 'Network Explorer',
+    src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@88bc7d434d9a3563e7b1332d45aa80c7e75cd2f3/dist/network-explorer.js',
+    icon: 'edit',
+    default: true,
+    kind: 'editor',
+  },
+  {
+    name: 'Diffing Tool',
+    src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@e35e480ce9b3ec621abcae721dd4ee8b0a8563f2/dist/diffing-tool.js',
     icon: 'edit',
     default: true,
     kind: 'editor',
