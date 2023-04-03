@@ -14,6 +14,7 @@ import '@material/mwc-icon-button-toggle';
 import { IconButton } from '@material/mwc-icon-button';
 import { IconButtonToggle } from '@material/mwc-icon-button-toggle';
 
+import './line-editor.js';
 import './substation-editor.js';
 import './ied-editor.js';
 import { communicationMappingWizard } from '../../wizards/commmap-wizards.js';
@@ -113,8 +114,51 @@ export class ZerolinePane extends LitElement {
 
     return ieds.length
       ? html`<div id="iedcontainer">
-          ${ieds.map(ied => html`<ied-editor .doc=${this.doc} .element=${ied}></ied-editor>`)}
+          ${ieds.map(
+            ied =>
+              html`<ied-editor .doc=${this.doc} .element=${ied}></ied-editor>`
+          )}
         </div>`
+      : html``;
+  }
+
+  renderSubstation(): TemplateResult {
+    return this.doc?.querySelector(':root > Substation')
+      ? html`<section>
+          ${Array.from(this.doc.querySelectorAll('Substation') ?? [])
+            .filter(isPublic)
+            .map(
+              substation =>
+                html`<substation-editor
+                  .doc=${this.doc}
+                  .element=${substation}
+                  .getAttachedIeds=${this.getAttachedIeds}
+                  ?readonly=${this.readonly}
+                  ?showfunctions=${shouldShowFunctions()}
+                ></substation-editor>`
+            )}
+        </section>`
+      : html`<h1>
+          <span style="color: var(--base1)"
+            >${translate('substation.missing')}</span
+          >
+        </h1>`;
+  }
+
+  renderLines(): TemplateResult {
+    return this.doc?.querySelector(':root > Line')
+      ? html`<section>
+          ${Array.from(this.doc.querySelectorAll('Line') ?? [])
+            .filter(isPublic)
+            .map(
+              line =>
+                html`<line-editor
+                  .doc=${this.doc}
+                  .element=${line}
+                 ?showfunctions=${shouldShowFunctions()}
+                ></line-editor>`
+            )}
+        </section>`
       : html``;
   }
 
@@ -179,26 +223,7 @@ export class ZerolinePane extends LitElement {
         </nav>
       </h1>
       ${this.renderIedContainer()}
-      ${this.doc?.querySelector(':root > Substation')
-        ? html`<section>
-            ${Array.from(this.doc.querySelectorAll('Substation') ?? [])
-              .filter(isPublic)
-              .map(
-                substation =>
-                  html`<substation-editor
-                    .doc=${this.doc}
-                    .element=${substation}
-                    .getAttachedIeds=${this.getAttachedIeds}
-                    ?readonly=${this.readonly}
-                    ?showfunctions=${shouldShowFunctions()}
-                  ></substation-editor>`
-              )}
-          </section>`
-        : html`<h1>
-            <span style="color: var(--base1)"
-              >${translate('substation.missing')}</span
-            >
-          </h1>`}`;
+      ${this.renderSubstation()}${this.renderLines()}`;
   }
 
   static styles = css`

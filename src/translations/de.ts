@@ -288,6 +288,21 @@ export const de: Translations = {
       updateVoltagelevel: 'Spannungsebene "{{name}}" bearbeitet',
     },
   },
+  line: {
+    name: 'Linie',
+    wizard: {
+      nameHelper: 'Liniename',
+      descHelper: 'Beschreibung des Linies',
+      typeHelper: 'Type des Linies',
+      title: {
+        add: 'Linie hinzufügen',
+        edit: 'Linie bearbeiten',
+      },
+    },
+    action: {
+      updateLine: 'Edited line "{{name}}"',
+    },
+  },
   bay: {
     name: 'Feld',
     wizard: {
@@ -349,6 +364,7 @@ export const de: Translations = {
     disconnect: 'Daten-Attribute Verbindung gelöst',
     subscriber: {
       subscribed: 'Verbunden',
+      notSubscribed: 'Nicht Verbunden',
       availableToSubscribe: 'Kann verbunden werden',
       partiallySubscribed: 'Teilweise verbunden',
       noControlBlockSelected: 'Keine Kontrollblock ausgewählt',
