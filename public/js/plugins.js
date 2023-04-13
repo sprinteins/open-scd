@@ -8,7 +8,7 @@ export const officialPlugins = [
   },
   {
     name: 'Communication Explorer',
-    src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@f549967e5c837a013c8bbaf99eb9a67bcee75891/dist/communication-explorer.js',
+    src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@6605082f003e062f314fe61d3c4259582ce0fc9f/dist/communication-explorer.js',
     icon: 'edit',
     default: true,
     kind: 'editor',
