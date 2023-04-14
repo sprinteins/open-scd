@@ -1,4 +1,4 @@
-const HASH_COMM_EXPLORER ="674db86f64088f24c62ba514c10b0cd251ce6e4a"
+const HASH_COMM_EXPLORER ="a82941eef33e1ce0daad804722cec68112a21a8a"
 
 
 export const officialPlugins = [
