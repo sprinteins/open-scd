@@ -1,3 +1,6 @@
+const HASH_COMM_EXPLORER ="674db86f64088f24c62ba514c10b0cd251ce6e4a"
+
+
 export const officialPlugins = [
   {
     name: 'Substation',
@@ -8,7 +11,7 @@ export const officialPlugins = [
   },
   {
     name: 'Communication Explorer',
-    src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@4a842f79c5ffcd24415bd8de55feb99df9687a17/dist/communication-explorer.js',
+    src: `https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@${HASH_COMM_EXPLORER}/dist/communication-explorer.js`,
     icon: 'edit',
     default: true,
     kind: 'editor',
