@@ -1,4 +1,6 @@
-const HASH_COMM_EXPLORER ="a82941eef33e1ce0daad804722cec68112a21a8a"
+const HASH_COMM_EXPLORER ="c6435e83527c61260b14b7d9a80915ab615b8e3d"
+const HASH_NETWORK_EXPLORER ="3d1abb4d911646665b788cd3d93c2fc41ef2903d"
+const HASH_DIFFING_TOOL ="66f80888e56310ca7cbcb510bdd12d6be05eca95"
 
 
 export const officialPlugins = [
@@ -16,20 +18,20 @@ export const officialPlugins = [
     default: true,
     kind: 'editor',
   },
-  // {
-  //   name: 'Network Explorer',
-  //   src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@88bc7d434d9a3563e7b1332d45aa80c7e75cd2f3/dist/network-explorer.js',
-  //   icon: 'edit',
-  //   default: true,
-  //   kind: 'editor',
-  // },
-  // {
-  //   name: 'Diffing Tool',
-  //   src: 'https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@e35e480ce9b3ec621abcae721dd4ee8b0a8563f2/dist/diffing-tool.js',
-  //   icon: 'edit',
-  //   default: true,
-  //   kind: 'editor',
-  // },
+  {
+    name: 'Network Explorer',
+    src: `https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@${HASH_NETWORK_EXPLORER}/dist/network-explorer.js`,
+    icon: 'edit',
+    default: true,
+    kind: 'editor',
+  },
+  {
+    name: 'Diffing Tool',
+    src: `https://cdn.jsdelivr.net/gh/sprinteins/oscd-plugins@${HASH_DIFFING_TOOL}/dist/diffing-tool.js`,
+    icon: 'edit',
+    default: true,
+    kind: 'editor',
+  },
   {
     name: 'IED',
     src: '/src/editors/IED.js',
