@@ -10,6 +10,20 @@ export const officialPlugins = [
     kind: "editor"
   },
   {
+    name: "Auto doc",
+    src: "https://sprinteins.github.io/oscd-plugins/auto-doc/index.js",
+    icon: "clarify",
+    activeByDefault: true,
+    kind: "editor"
+  },
+  {
+    name: "I/O Center",
+    src: "https://sprinteins.github.io/oscd-plugins/io-center/index.js",
+    icon: "linked_services",
+    activeByDefault: true,
+    kind: "editor"
+  },
+  {
     name: "IED",
     src: generatePluginPath("plugins/src/editors/IED.js"),
     icon: "developer_board",

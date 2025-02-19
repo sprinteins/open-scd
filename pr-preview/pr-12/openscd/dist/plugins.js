@@ -2,7 +2,6 @@ export function generatePluginPath(plugin) {
     return location.origin + location.pathname + plugin;
 }
 export const officialPlugins = [
-    // start adding this temporary waiting to fix issue https://github.com/openscd/open-scd/issues/1622
     {
         name: 'Type Designer',
         src: 'https://sprinteins.github.io/oscd-plugins/type-designer/index.js',
@@ -10,7 +9,20 @@ export const officialPlugins = [
         activeByDefault: true,
         kind: 'editor',
     },
-    // end
+    {
+        name: 'Auto doc',
+        src: 'https://sprinteins.github.io/oscd-plugins/auto-doc/index.js',
+        icon: 'clarify',
+        activeByDefault: true,
+        kind: 'editor',
+    },
+    {
+        name: 'I/O Center',
+        src: 'https://sprinteins.github.io/oscd-plugins/io-center/index.js',
+        icon: 'linked_services',
+        activeByDefault: true,
+        kind: 'editor',
+    },
     {
         name: 'IED',
         src: generatePluginPath('plugins/src/editors/IED.js'),
