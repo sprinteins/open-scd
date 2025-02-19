@@ -1089,6 +1089,24 @@ snapshots["open-scd layout looks like its snapshot"] =
       </mwc-list-item>
       <oscd-plugin6589bc97026c833d class="menu plugin">
       </oscd-plugin6589bc97026c833d>
+      <mwc-list-item
+        aria-disabled="false"
+        class="bottom"
+        data-name="Plugin Store"
+        graphic="icon"
+        iconid="shopping_bag"
+        mwc-list-item=""
+        tabindex="-1"
+      >
+        <mwc-icon slot="graphic">
+          shopping_bag
+        </mwc-icon>
+        <span>
+          Plugin Store
+        </span>
+      </mwc-list-item>
+      <oscd-plugin4df09ef1590edfb6 class="menu plugin">
+      </oscd-plugin4df09ef1590edfb6>
       <li
         divider=""
         padded=""
