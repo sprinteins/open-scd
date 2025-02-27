@@ -23,7 +23,7 @@ jobs:
         run: |
           npm i @nx/nx-linux-x64-gnu
           npm clean-install
-          PUBLIC_URL=open-scd npm run-script build
+          npm run-script build
           npm run-script doc
 
       - name: Copy Core Docs to OpenSCD
