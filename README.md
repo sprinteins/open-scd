@@ -1,6 +1,13 @@
 # `OpenSCD`
 
-[![Build Status](https://travis-ci.org/openscd/open-scd.svg?branch=main)](https://travis-ci.org/openscd/open-scd)
+> [!IMPORTANT]
+>
+> As part of a restructuring effort, this repository has moved and is now being maintained by [LF Energy CoMPAS](https://github.com/com-pas/open-scd).
+>
+> For more current distributions, please visit **https://openscd.org/get.**
+>
+> The OpenSCD project continues to grow! Only this repository has moved and until it will be replaced with a new version it will still being avaialble at **https://openscd.github.io/**. Still, further development of the distribution will continue in the LF Energy CoMPAS.
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopenscd%2Fopen-scd.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopenscd%2Fopen-scd?ref=badge_shield)
 [![Built with open-wc recommendations](https://img.shields.io/badge/built%20with-open--wc-blue.svg)](https://github.com/open-wc)
 [![Zulip Chat](https://img.shields.io/badge/Zulip%20-%20%23OpenSCD%20chat-purple?logo=zulip&color=2aa198&labelColor=6c71c4)](https://openscd.zulipchat.com/join/k3cyur3wx526tvafkjwubhjn)
@@ -36,3 +43,7 @@ A high-level overview of how it’s organized will help you know where to look f
 
 - [⚖️ Decisions](docs/decisions/README.md) documents the decisions we made and why we made them.
 - [✏️ Edit event API](docs/core-api/edit-api.md) documents the edit event API.
+
+## CC-EULA license
+
+Some of the files in this repository are subject to the CC-EULA License. Please check the [disclaimer](./packages/openscd/public/xml/Disclaimer.md) to to see what his means.

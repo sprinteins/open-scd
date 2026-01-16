@@ -17,6 +17,8 @@ import { LNContainer } from '../../../src/editors/ied/ln-container.js';
 import { DOContainer } from '../../../src/editors/ied/do-container.js';
 import { DAContainer } from '../../../src/editors/ied/da-container.js';
 import { MockOpenSCD } from '@openscd/open-scd/test/mock-open-scd.js';
+import { OscdApi } from '@openscd/core';
+import { PluginStateApi } from '../../../../core/dist/api/plugin-state-api.js';
 
 describe('IED Plugin', () => {
   if (customElements.get('ied-plugin') === undefined)
@@ -42,6 +44,7 @@ describe('IED Plugin', () => {
 
   describe('with a doc loaded', () => {
     let doc: XMLDocument;
+    let oscdApi: OscdApi;
 
     describe('containing no IEDs', () => {
       beforeEach(async () => {
@@ -106,9 +109,15 @@ describe('IED Plugin', () => {
           .then(response => response.text())
           .then(str => new DOMParser().parseFromString(str, 'application/xml'));
         nsdoc = await initializeNsdoc();
+        oscdApi = new OscdApi('IED');
+        oscdApi.pluginState.setState(null);
         parent = await fixture(
           html`<mock-open-scd
-            ><ied-plugin .doc="${doc}" .nsdoc="${nsdoc}"></ied-plugin
+            ><ied-plugin
+              .doc="${doc}"
+              .nsdoc="${nsdoc}"
+              .oscdApi=${oscdApi}
+            ></ied-plugin
           ></mock-open-scd>`
         );
         element = parent.getActivePlugin();
@@ -370,6 +379,80 @@ describe('IED Plugin', () => {
         primaryButton.click();
         await element.updateComplete;
       }
+
+      describe('load and store selected IEDs', () => {
+        it('should store selected IEDs on disconnected', async () => {
+          await selectIed('IED3');
+          element.disconnectedCallback();
+
+          const api = new OscdApi('IED');
+          expect(api.pluginState.getState()).to.deep.equal({
+            selectedIEDs: ['IED3'],
+          });
+        });
+      });
+
+      describe('with stored plugin state', () => {
+        beforeEach(() => {
+          oscdApi.pluginState.setState({ selectedIEDs: ['IED3'] });
+        });
+
+        it('should load previously saved IED', () => {
+          element.connectedCallback();
+
+          expect(element.selectedIEDs).to.deep.equal(['IED3']);
+        });
+      });
+
+      describe('virtual IED creation', () => {
+        it('should render create IED button', () => {
+          const createButton =
+            element.shadowRoot!.querySelector('.add-ied-button');
+          expect(createButton).to.exist;
+          expect(createButton!.textContent).to.include('Create Virtual IED');
+        });
+
+        it('should show create IED dialog when button is clicked', async () => {
+          const createButton = element.shadowRoot!.querySelector(
+            '.add-ied-button'
+          ) as HTMLElement;
+          const dialog =
+            element.shadowRoot!.querySelector('create-ied-dialog')!;
+
+          let dialogShowCalled = false;
+          (dialog as any).show = () => {
+            dialogShowCalled = true;
+          };
+
+          createButton.click();
+          await element.updateComplete;
+
+          expect(dialogShowCalled).to.be.true;
+        });
+
+        it('should create virtual IED when confirmed through dialog', async () => {
+          let editEventDetail: any = null;
+          element.addEventListener('oscd-edit-v2', (event: Event) => {
+            editEventDetail = (event as CustomEvent).detail;
+          });
+
+          const dialog = element.shadowRoot!.querySelector(
+            'create-ied-dialog'
+          ) as any;
+
+          const onConfirm = dialog.onConfirm;
+          onConfirm('TestVirtualIED');
+
+          await element.updateComplete;
+
+          expect(editEventDetail).to.exist;
+          expect(editEventDetail.edit).to.be.an('array');
+          expect(editEventDetail.edit.length).to.be.greaterThan(0);
+
+          expect(element.selectedIEDs).to.deep.equal(['TestVirtualIED']);
+          expect(element.selectedLNClasses).to.deep.equal([]);
+        });
+      });
     });
   });
 

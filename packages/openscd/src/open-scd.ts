@@ -45,12 +45,12 @@ import type {
   Plugin as CorePlugin,
   EditCompletedEvent,
 } from '@openscd/core';
-
-import { HistoryState, historyStateEvent } from './addons/History.js';
+import { OscdApi, XMLEditor } from '@openscd/core';
 
 import { InstalledOfficialPlugin, MenuPosition, PluginKind, Plugin } from "./plugin.js"
 import { ConfigurePluginEvent, ConfigurePluginDetail, newConfigurePluginEvent } from './plugin.events.js';
 import { newLogEvent } from '@openscd/core/foundation/deprecated/history';
+import { pluginTag } from './plugin-tag.js';
 
 
 
@@ -63,13 +63,17 @@ export class OpenSCD extends LitElement {
     return html`<oscd-waiter>
       <oscd-settings .host=${this}>
         <oscd-wizards .host=${this}>
-          <oscd-history .host=${this} .editCount=${this.historyState.editCount}>
+          <oscd-history
+            .host=${this}
+            .editor=${this.editor}
+          >
             <oscd-editor
               .doc=${this.doc}
               .docName=${this.docName}
               .docId=${this.docId}
               .host=${this}
-              .editCount=${this.historyState.editCount}
+              .editCount=${this.editCount}
+              .editor=${this.editor}
             >
               <oscd-layout
                 @add-external-plugin=${this.handleAddExternalPlugin}
@@ -78,9 +82,9 @@ export class OpenSCD extends LitElement {
                 .host=${this}
                 .doc=${this.doc}
                 .docName=${this.docName}
-                .editCount=${this.historyState.editCount}
-                .historyState=${this.historyState}
+                .editCount=${this.editCount}
                 .plugins=${this.storedPlugins}
+                .editor=${this.editor}
               >
               </oscd-layout>
             </oscd-editor>
@@ -98,12 +102,7 @@ export class OpenSCD extends LitElement {
   /** The UUID of the current [[`doc`]] */
   @property({ type: String }) docId = '';
 
-  @state()
-  historyState: HistoryState = {
-    editCount: -1,
-    canRedo: false,
-    canUndo: false,
-  }
+  editor = new XMLEditor();
 
   /** Object containing all *.nsdoc files and a function extracting element's label form them*/
   @property({ attribute: false })
@@ -122,6 +121,10 @@ export class OpenSCD extends LitElement {
   }
 
   @state() private storedPlugins: Plugin[] = [];
+
+  @state() private editCount = -1;
+
+  private unsubscribers: (() => any)[] = [];
 
   /** Loads and parses an `XMLDocument` after [[`src`]] has changed. */
   private async loadDoc(src: string): Promise<void> {
@@ -182,14 +185,19 @@ export class OpenSCD extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.loadPlugins()
+    this.loadPlugins();
+
+    this.unsubscribers.push(
+      this.editor.subscribe(e => this.editCount++),
+      this.editor.subscribeUndoRedo(e => this.editCount++)
+    );
 
     // TODO: let Lit handle the event listeners, move to render()
     this.addEventListener('reset-plugins', this.resetPlugins);
-    this.addEventListener(historyStateEvent, (e: CustomEvent<HistoryState>) => {
-      this.historyState = e.detail;
-      this.requestUpdate();
-    });
+  }
+
+  disconnectedCallback(): void {
+    this.unsubscribers.forEach(u => u());
   }
 
 
@@ -423,13 +431,15 @@ export class OpenSCD extends LitElement {
         return staticTagHtml`<${tag}
             .doc=${this.doc}
             .docName=${this.docName}
-            .editCount=${this.historyState.editCount}
+            .editCount=${this.editCount}
             .plugins=${this.storedPlugins}
             .docId=${this.docId}
             .pluginId=${plugin.src}
             .nsdoc=${this.nsdoc}
             .docs=${this.docs}
             .locale=${this.locale}
+            .oscdApi=${new OscdApi(tag)}
+            .editor=${this.editor}
             class="${classMap({
               plugin: true,
               menu: plugin.kind === 'menu',
@@ -445,33 +455,13 @@ export class OpenSCD extends LitElement {
 
   // PLUGGING INTERFACES
   @state() private pluginTags = new Map<string, string>();
-  /**
-   * Hashes `uri` using cyrb64 analogous to
-   * https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js .
-   * @returns a valid customElement tagName containing the URI hash.
-   */
+
   private pluginTag(uri: string): string {
     if (!this.pluginTags.has(uri)) {
-      let h1 = 0xdeadbeef,
-        h2 = 0x41c6ce57;
-      for (let i = 0, ch; i < uri.length; i++) {
-        ch = uri.charCodeAt(i);
-        h1 = Math.imul(h1 ^ ch, 2654435761);
-        h2 = Math.imul(h2 ^ ch, 1597334677);
-      }
-      h1 =
-        Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^
-        Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-      h2 =
-        Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^
-        Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-      this.pluginTags.set(
-        uri,
-        'oscd-plugin' +
-          ((h2 >>> 0).toString(16).padStart(8, '0') +
-            (h1 >>> 0).toString(16).padStart(8, '0'))
-      );
+      const tag = pluginTag(uri);
+      this.pluginTags.set(uri, tag);
     }
+
     return this.pluginTags.get(uri)!;
   }
 
@@ -492,6 +482,7 @@ declare global {
 export interface MenuItem {
   icon: string;
   name: string;
+  src?: string;
   hint?: string;
   actionItem?: boolean;
   action?: (event: CustomEvent<ActionDetail>) => void;
