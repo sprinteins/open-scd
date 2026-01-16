@@ -1116,6 +1116,7 @@ snapshots["open-scd layout looks like its snapshot"] =
         aria-disabled="false"
         class="bottom"
         data-name="Plugin Store"
+        data-src="https://sprinteins.github.io/oscd-plugin-store/index.js"
         graphic="icon"
         iconid="shopping_bag"
         mwc-list-item=""
