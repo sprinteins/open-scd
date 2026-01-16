@@ -91,6 +91,7 @@ export const en = {
       select: 'Select {{tagName}}',
       edit: 'Edit {{tagName}}',
       add: 'Add {{tagName}}',
+      selectAp: 'Select New ConnectedAP',
     },
   },
   openSCD: {
@@ -156,7 +157,7 @@ export const en = {
     zeroissues: 'No errors found in the project',
     placeholder: 'Issues found during validation will show up here',
     missingnsd:
-      'Cannot validate DataTypeTemplates. The version of the project must be higher than or equal to 2007B3',
+      'Cannot validate DataTypeTemplates. The version of the project must be higher than or equal to 2007B5',
   },
   plugins: {
     heading: 'Plug-ins',
@@ -225,6 +226,8 @@ export const en = {
     missing: 'No IED',
     toggleChildElements: 'Toggle child elements',
     settings: 'Show Services the IED/AccessPoint provides',
+    createIed: 'Create Virtual IED',
+    addAccessPoint: 'Add AccessPoint',
     wizard: {
       daTitle: 'Show DA Info',
       doTitle: 'Show DO Info',
@@ -244,11 +247,57 @@ export const en = {
       daBType: 'Data attribute type',
       daValue: 'Data attribute value',
     },
+    createDialog: {
+      iedName: 'IED name',
+      nameFormatError: 'IED name cannot contain spaces',
+      nameUniqueError: 'IED name already exists',
+    },
+    addAccessPointDialog: {
+      title: 'Add AccessPoint',
+      nameHelper: 'AccessPoint name',
+      descHelper: 'AccessPoint description',
+      apName: 'AccessPoint name',
+      createServerAt: 'Add ServerAt',
+      selectAccessPoint: 'Select AccessPoint',
+      serverAtDesc: 'ServerAt description',
+      nameFormatError: 'AccessPoint name cannot contain spaces',
+      nameUniqueError: 'AccessPoint name already exists',
+      nameTooLongError: 'AccessPoint name is too long',
+    },
+    addLDeviceDialog: {
+      title: 'Add LDevice',
+      inst: 'LDevice inst',
+      desc: 'LDevice description',
+      instRequiredError: 'LDevice inst is required',
+      instFormatError: 'Invalid inst',
+      instUniqueError: 'LDevice inst already exists',
+      instTooLongError: 'LDevice inst is too long',
+    },
+    addLnDialog: {
+      title: 'Add LN',
+      amount: 'Amount',
+      prefix: 'Prefix',
+      filter: 'Filter Logical Node Types',
+      noResults: 'No Logical Node Types found',
+    },
+  },
+  accesspoint: {
+    wizard: {
+      nameHelper: 'AccessPoint name',
+      descHelper: 'AccessPoint description',
+      title: {
+        add: 'Add AccessPoint',
+        edit: 'Edit AccessPoint',
+        delete: 'Remove AccessPoint with references',
+        references: 'References to be removed',
+      },
+    },
   },
   ied: {
     wizard: {
       nameHelper: 'IED name',
       descHelper: 'IED description',
+      manufacturerHelper: 'IED manufacturer',
       title: {
         edit: 'Edit IED',
         delete: 'Remove IED with references',
@@ -265,6 +314,7 @@ export const en = {
       nameHelper: 'Logical device name',
       noNameSupportHelper: "IED doesn't support Functional Naming",
       descHelper: 'Logical device description',
+      instHelper: 'Logical device inst',
       title: {
         edit: 'Edit logical device',
       },
@@ -280,7 +330,7 @@ export const en = {
       prefixHelper: 'Prefix of the logical node',
       lnClassHelper: 'Logical node class',
       instHelper: 'Instance',
-    }
+    },
   },
   ln0: {
     wizard: {
@@ -291,7 +341,7 @@ export const en = {
       lnTypeHelper: 'Logical node type',
       lnClassHelper: 'Logical node class',
       instHelper: 'Instance',
-    }
+    },
   },
   powertransformer: {
     wizard: {
