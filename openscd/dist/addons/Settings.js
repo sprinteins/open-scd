@@ -1,6 +1,6 @@
 import { __decorate } from "../../../_snowpack/pkg/tslib.js";
 import { html, property, query, customElement, LitElement, css, } from '../../../_snowpack/pkg/lit-element.js';
-import { get, registerTranslateConfig, use } from '../../../_snowpack/pkg/lit-translate.js';
+import { get, translate, registerTranslateConfig, use } from '../../../_snowpack/pkg/lit-translate.js';
 import '../../../_snowpack/pkg/@material/mwc-button.js';
 import '../../../_snowpack/pkg/@material/mwc-dialog.js';
 import '../../../_snowpack/pkg/@material/mwc-formfield.js';
@@ -25,6 +25,13 @@ export const defaults = {
     'IEC 61850-8-1': undefined,
 };
 let OscdSettings = class OscdSettings extends LitElement {
+    constructor() {
+        super(...arguments);
+        /** Object containing all *.nsdoc files and a function extracting element's label form them*/
+        this.nsdoc = initializeNsdoc();
+        this.nsdUploadButton = true;
+        this.languageConfig = { languages, loader };
+    }
     /** Current [[`Settings`]] in `localStorage`, default to [[`defaults`]]. */
     get settings() {
         return {
@@ -128,7 +135,7 @@ let OscdSettings = class OscdSettings extends LitElement {
         @change="${(evt) => this.uploadNsdocFile(evt)}}"
       />
       <mwc-button
-        label="${get('settings.selectFileButton')}"
+        label="${translate('settings.selectFileButton')}"
         id="selectFileButton"
         @click=${() => {
             const input = (this.shadowRoot.querySelector('#nsdoc-file'));
@@ -170,7 +177,7 @@ let OscdSettings = class OscdSettings extends LitElement {
         };
         if (!this.isEqual(nsdVersion, nsdocVersion)) {
             this.dispatchEvent(newLogEvent({
-                kind: 'error',
+                kind: 'warning',
                 title: get('settings.invalidNsdocVersion', {
                     id: id,
                     filename: event.detail.filename,
@@ -178,7 +185,6 @@ let OscdSettings = class OscdSettings extends LitElement {
                     nsdocVersion: `${nsdocVersion.version}${nsdocVersion.revision}${nsdocVersion.release}`,
                 }),
             }));
-            return;
         }
         this.setSetting(id, event.detail.nsdoc);
         this.nsdoc = initializeNsdoc(); // update nsdoc
@@ -241,16 +247,10 @@ let OscdSettings = class OscdSettings extends LitElement {
     parseToXmlObject(text) {
         return new DOMParser().parseFromString(text, 'application/xml');
     }
-    constructor() {
-        super();
-        /** Object containing all *.nsdoc files and a function extracting element's label form them*/
-        this.nsdoc = initializeNsdoc();
-        this.nsdUploadButton = true;
-        registerTranslateConfig({ loader, empty: key => key });
-        use(this.settings.language);
-    }
     connectedCallback() {
         super.connectedCallback();
+        registerTranslateConfig({ loader: this.languageConfig.loader, empty: key => key });
+        use(this.settings.language);
         if (this.host) {
             this.host.addEventListener('oscd-settings', (evt) => {
                 evt.detail.show ? this.settingsUI.show() : this.settingsUI.close();
@@ -261,7 +261,7 @@ let OscdSettings = class OscdSettings extends LitElement {
     render() {
         return html `<mwc-dialog
         id="settings"
-        heading="${get('settings.title')}"
+        heading="${translate('settings.title')}"
         @closing=${this.onClosing}
       >
         <form>
@@ -269,28 +269,28 @@ let OscdSettings = class OscdSettings extends LitElement {
             fixedMenuPosition
             id="language"
             icon="language"
-            label="${get('settings.language')}"
+            label="${translate('settings.language')}"
           >
-            ${Object.keys(languages).map(lang => html `<mwc-list-item
+            ${Object.keys(this.languageConfig.languages).map(lang => html `<mwc-list-item
                   graphic="icon"
                   value="${lang}"
                   ?selected=${lang === this.settings.language}
-                  >${get(`settings.languages.${lang}`)}</mwc-list-item
+                  >${translate(`settings.languages.${lang}`)}</mwc-list-item
                 >`)}
           </mwc-select>
-          <mwc-formfield label="${get('settings.dark')}">
+          <mwc-formfield label="${translate('settings.dark')}">
             <mwc-switch
               id="dark"
               ?checked=${this.settings.theme === 'dark'}
             ></mwc-switch>
           </mwc-formfield>
-          <mwc-formfield label="${get('settings.mode')}">
+          <mwc-formfield label="${translate('settings.mode')}">
             <mwc-switch
               id="mode"
               ?checked=${this.settings.mode === 'pro'}
             ></mwc-switch>
           </mwc-formfield>
-          <mwc-formfield label="${get('settings.showieds')}">
+          <mwc-formfield label="${translate('settings.showieds')}">
             <mwc-switch
               id="showieds"
               ?checked=${this.settings.showieds === 'on'}
@@ -300,7 +300,7 @@ let OscdSettings = class OscdSettings extends LitElement {
         <wizard-divider></wizard-divider>
         ${this.nsdUploadButton
             ? html `<section id="shownsdbutton">
-              <h3>${get('settings.loadNsdTranslations')}</h3>
+              <h3>${translate('settings.loadNsdTranslations')}</h3>
               ${this.renderFileSelect()}
             </section>`
             : html ``}
@@ -311,14 +311,14 @@ let OscdSettings = class OscdSettings extends LitElement {
           ${this.renderNsdocItem('IEC 61850-8-1')}
         </mwc-list>
         <mwc-button slot="secondaryAction" dialogAction="close">
-          ${get('cancel')}
+          ${translate('cancel')}
         </mwc-button>
         <mwc-button
           style="--mdc-theme-primary: var(--mdc-theme-error)"
           slot="secondaryAction"
           dialogAction="reset"
         >
-          ${get('reset')}
+          ${translate('reset')}
         </mwc-button>
         <mwc-button
           icon="save"
@@ -326,7 +326,7 @@ let OscdSettings = class OscdSettings extends LitElement {
           slot="primaryAction"
           dialogAction="save"
         >
-          ${get('save')}
+          ${translate('save')}
         </mwc-button>
       </mwc-dialog>
       <slot></slot>
@@ -437,6 +437,9 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], OscdSettings.prototype, "nsdUploadButton", void 0);
+__decorate([
+    property({ type: Object })
+], OscdSettings.prototype, "languageConfig", void 0);
 __decorate([
     query('#settings')
 ], OscdSettings.prototype, "settingsUI", void 0);

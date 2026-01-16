@@ -27,9 +27,7 @@ import {
 import {
   HistoryUIKind,
   newEmptyIssuesEvent,
-  newHistoryUIEvent,
-  newRedoEvent,
-  newUndoEvent
+  newHistoryUIEvent
 } from "./History.js";
 import {List} from "../../../_snowpack/pkg/@material/mwc-list.js";
 import "../../../_snowpack/pkg/@material/mwc-drawer.js";
@@ -38,19 +36,20 @@ import "../../../_snowpack/pkg/@material/mwc-dialog.js";
 import "../../../_snowpack/pkg/@material/mwc-switch.js";
 import "../../../_snowpack/pkg/@material/mwc-select.js";
 import "../../../_snowpack/pkg/@material/mwc-textfield.js";
-import {nothing} from "../../../_snowpack/pkg/lit.js";
+import {pluginTag} from "../plugin-tag.js";
 import "./plugin-manager/plugin-manager.js";
 import "./plugin-manager/custom-plugin-dialog.js";
+import "./menu-tabs/menu-tabs.js";
 export let OscdLayout = class extends LitElement {
   constructor() {
     super(...arguments);
     this.doc = null;
     this.docName = "";
     this.editCount = -1;
-    this.activeTab = 0;
     this.plugins = [];
     this.validated = Promise.resolve();
     this.shouldValidate = false;
+    this.activeEditor = this.calcActiveEditors()[0];
   }
   render() {
     return html`
@@ -60,13 +59,17 @@ export let OscdLayout = class extends LitElement {
         @oscd-run-menu=${this.handleRunMenuByEvent}
       >
         <slot></slot>
-        ${this.renderHeader()} ${this.renderAside()} ${this.renderContent()}
-        ${this.renderLanding()} ${this.renderPlugging()}
+        ${this.renderHeader()} ${this.renderAside()} ${this.renderMenuContent()}
+        ${this.renderContent()} ${this.renderLanding()} ${this.renderPlugging()}
       </div>
     `;
   }
   renderPlugging() {
     return html` ${this.renderPluginUI()} ${this.renderDownloadUI()} `;
+  }
+  getMenuContent(src) {
+    const tag = pluginTag(src);
+    return this.menuContent.querySelector(tag);
   }
   renderDownloadUI() {
     return html`
@@ -111,9 +114,9 @@ export let OscdLayout = class extends LitElement {
         name: "undo",
         actionItem: true,
         action: () => {
-          this.dispatchEvent(newUndoEvent());
+          this.editor.undo();
         },
-        disabled: () => !this.historyState.canUndo,
+        disabled: () => !this.editor.canUndo,
         kind: "static",
         content: () => html``
       },
@@ -122,9 +125,9 @@ export let OscdLayout = class extends LitElement {
         name: "redo",
         actionItem: true,
         action: () => {
-          this.dispatchEvent(newRedoEvent());
+          this.editor.redo();
         },
-        disabled: () => !this.historyState.canRedo,
+        disabled: () => !this.editor.canRedo,
         kind: "static",
         content: () => html``
       },
@@ -213,7 +216,14 @@ export let OscdLayout = class extends LitElement {
         return;
       }
       this.shouldValidate = false;
-      this.validated = Promise.allSettled(this.menuUI.querySelector("mwc-list").items.filter((item) => item.className === "validator").map((item) => item.nextElementSibling.validate())).then();
+      this.validated = Promise.allSettled(this.menuUI.querySelector("mwc-list").items.filter((item) => item.className === "validator").map((item) => {
+        const src = item.dataset.src ?? "";
+        const menuContentElement = this.getMenuContent(src);
+        if (!menuContentElement) {
+          return;
+        }
+        return menuContentElement.validate();
+      })).then();
       this.dispatchEvent(newPendingStateEvent(this.validated));
     });
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -227,8 +237,13 @@ export let OscdLayout = class extends LitElement {
       return {
         icon: plugin.icon || pluginIcons["menu"],
         name: plugin.name,
+        src: plugin.src,
         action: (ae) => {
-          this.dispatchEvent(newPendingStateEvent(ae.target.items[ae.detail.index].nextElementSibling.run()));
+          const menuContentElement = this.getMenuContent(plugin.src);
+          if (!menuContentElement) {
+            return;
+          }
+          this.dispatchEvent(newPendingStateEvent(menuContentElement.run()));
         },
         disabled: () => plugin.requireDoc && this.doc === null,
         content: () => {
@@ -246,9 +261,14 @@ export let OscdLayout = class extends LitElement {
       return {
         icon: plugin.icon || pluginIcons["validator"],
         name: plugin.name,
+        src: plugin.src,
         action: (ae) => {
           this.dispatchEvent(newEmptyIssuesEvent(plugin.src));
-          this.dispatchEvent(newPendingStateEvent(ae.target.items[ae.detail.index].nextElementSibling.validate()));
+          const menuContentElement = this.getMenuContent(plugin.src);
+          if (!menuContentElement) {
+            return;
+          }
+          this.dispatchEvent(newPendingStateEvent(menuContentElement.validate()));
         },
         disabled: () => this.doc === null,
         content: plugin.content ?? (() => html``),
@@ -271,12 +291,12 @@ export let OscdLayout = class extends LitElement {
         iconid="${me.icon}"
         graphic="icon"
         data-name="${me.name}"
+        data-src="${me.src ?? ""}"
         .disabled=${me.disabled?.() || !me.action}
         ><mwc-icon slot="graphic">${me.icon}</mwc-icon>
         <span>${get(me.name)}</span>
         ${me.hint ? html`<span slot="secondary"><tt>${me.hint}</tt></span>` : ""}
       </mwc-list-item>
-      ${me.content ? me.content() : nothing}
     `;
   }
   renderActionItem(me) {
@@ -303,9 +323,22 @@ export let OscdLayout = class extends LitElement {
         slot="navigationIcon"
         @click=${() => this.menuUI.open = true}
       ></mwc-icon-button>
-      <div slot="title" id="title">${this.docName}</div>
-      ${this.menu.map(this.renderActionItem)}
+      ${this.renderTitle()}
+      ${this.renderActionItems()}
     </mwc-top-app-bar-fixed>`;
+  }
+  renderTitle() {
+    return html`<div slot="title" id="title">${this.docName}</div>`;
+  }
+  renderActionItems() {
+    return html`${this.menu.map(this.renderActionItem)}`;
+  }
+  renderMenuContent() {
+    return html`
+      <div id="menuContent">
+        ${this.menu.filter((p) => p.content).map((p) => p.content())}
+      </div>
+    `;
   }
   renderAside() {
     return html`
@@ -346,16 +379,16 @@ export let OscdLayout = class extends LitElement {
       return html``;
     }
     return html`
-      <mwc-tab-bar
-        @MDCTabBar:activated=${this.handleActivatedEditorTabByUser}
-        activeIndex=${this.activeTab}
+      <oscd-menu-tabs
+        .editors=${this.calcActiveEditors()}
+        .activeEditor=${this.activeEditor}
+        @oscd-editor-tab-activated=${this.handleEditorTabActivated}
       >
-        ${activeEditors}
-      </mwc-tab-bar>
-      ${renderEditorContent(this.editors, this.activeTab, this.doc)}
+      </oscd-menu-tabs>
+      ${renderEditorContent(this.doc, this.activeEditor)}
     `;
-    function renderEditorContent(editors, activeTab, doc) {
-      const editor = editors[activeTab];
+    function renderEditorContent(doc, activeEditor) {
+      const editor = activeEditor;
       const requireDoc = editor?.requireDoc;
       if (requireDoc && !doc) {
         return html``;
@@ -367,30 +400,26 @@ export let OscdLayout = class extends LitElement {
       return html`${content()}`;
     }
   }
-  handleActivatedEditorTabByUser(e) {
-    const tabIndex = e.detail.index;
-    this.activateTab(tabIndex);
+  handleEditorTabActivated(e) {
+    this.activeEditor = e.detail.editor;
   }
   handleActivateEditorByEvent(e) {
     const {name, src} = e.detail;
     const editors = this.calcActiveEditors();
-    const wantedEditorIndex = editors.findIndex((editor) => editor.name === name || editor.src === src);
-    if (wantedEditorIndex < 0) {
+    const wantedEditor = editors.find((editor) => editor.name === name || editor.src === src);
+    if (!wantedEditor) {
       return;
     }
-    this.activateTab(wantedEditorIndex);
-  }
-  activateTab(index) {
-    this.activeTab = index;
+    this.activeEditor = wantedEditor;
   }
   handleRunMenuByEvent(e) {
     this.menuUI.open = true;
     const menuEntry = this.menuUI.querySelector(`[data-name="${e.detail.name}"]`);
-    const menuElement = menuEntry.nextElementSibling;
-    if (!menuElement) {
+    const menuContentElement = this.getMenuContent(menuEntry.dataset.src ?? "");
+    if (!menuContentElement) {
       return;
     }
-    menuElement.run();
+    menuContentElement.run();
   }
   renderLanding() {
     if (this.doc) {
@@ -528,8 +557,8 @@ __decorate([
   property({type: Number})
 ], OscdLayout.prototype, "editCount", 2);
 __decorate([
-  property({type: Number})
-], OscdLayout.prototype, "activeTab", 2);
+  property({type: Object})
+], OscdLayout.prototype, "editor", 2);
 __decorate([
   property({type: Array})
 ], OscdLayout.prototype, "plugins", 2);
@@ -537,17 +566,20 @@ __decorate([
   property({type: Object})
 ], OscdLayout.prototype, "host", 2);
 __decorate([
-  property({type: Object})
-], OscdLayout.prototype, "historyState", 2);
-__decorate([
   state()
 ], OscdLayout.prototype, "validated", 2);
 __decorate([
   state()
 ], OscdLayout.prototype, "shouldValidate", 2);
 __decorate([
+  state()
+], OscdLayout.prototype, "activeEditor", 2);
+__decorate([
   query("#menu")
 ], OscdLayout.prototype, "menuUI", 2);
+__decorate([
+  query("#menuContent")
+], OscdLayout.prototype, "menuContent", 2);
 __decorate([
   query("#pluginManager")
 ], OscdLayout.prototype, "pluginUI", 2);
