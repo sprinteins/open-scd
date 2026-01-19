@@ -13,7 +13,7 @@ export const officialPlugins: PluginConfig[] = [
 		kind: 'editor',
 	},
 	{
-		name: 'Auto doc',
+		name: 'Auto Doc',
 		src: 'https://sprinteins.github.io/oscd-plugins/auto-doc/index.js',
 		icon: 'clarify',
 		activeByDefault: true,
