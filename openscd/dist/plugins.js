@@ -3,6 +3,13 @@ export function generatePluginPath(plugin) {
 }
 export const officialPlugins = [
     {
+        name: 'Type Distributor',
+        src: 'https://sprinteins.github.io/oscd-plugins/type-distributor/index.js',
+        icon: 'share',
+        activeByDefault: true,
+        kind: 'editor',
+    },
+    {
         name: 'Type Designer',
         src: 'https://sprinteins.github.io/oscd-plugins/type-designer/index.js',
         icon: 'design_services',
@@ -10,7 +17,7 @@ export const officialPlugins = [
         kind: 'editor',
     },
     {
-        name: 'Auto doc',
+        name: 'Auto Doc',
         src: 'https://sprinteins.github.io/oscd-plugins/auto-doc/index.js',
         icon: 'clarify',
         activeByDefault: true,
