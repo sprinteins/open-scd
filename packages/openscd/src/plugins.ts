@@ -5,6 +5,13 @@ export function generatePluginPath(plugin: string): string {
 }
 
 export const officialPlugins: PluginConfig[] = [
+  	{
+		name: 'Type Distributor',
+		src: 'https://sprinteins.github.io/oscd-plugins/type-distributor/index.js',
+		icon: 'share',
+		activeByDefault: true,
+		kind: 'editor',
+	},
 	{
 		name: 'Type Designer',
 		src: 'https://sprinteins.github.io/oscd-plugins/type-designer/index.js',
