@@ -60,13 +60,6 @@ export const officialPlugins = [
         kind: 'editor',
     },
     {
-        name: 'Documentation',
-        src: 'https://sprinteins.github.io/oscd-plugins/documentation/index.js',
-        icon: 'edit',
-        activeByDefault: true,
-        kind: 'editor',
-    },
-    {
         name: 'Template Generator',
         src: 'https://sprinteins.github.io/oscd-template-generator/oscd-template-generator.js',
         icon: 'account_tree',
